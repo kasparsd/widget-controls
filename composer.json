@@ -1,0 +1,16 @@
+{
+    "name": "xwp/widget-controls",
+    "description": "Create widget controls",
+    "require": {
+        "symfony/form": "~2.6",
+        "symfony/validator": "~2.6",
+        "symfony/twig-bridge": "~2.6",
+        "symfony/translation": "~2.6"
+    },
+    "authors": [
+        {
+            "name": "Kaspars Dambis",
+            "email": "hi@kaspars.net"
+        }
+    ]
+}
