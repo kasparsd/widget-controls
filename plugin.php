@@ -8,8 +8,6 @@
 	Version: 0.1
 */
 
-date_default_timezone_set( 'Europe/Riga' );
-
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\Form\Forms;
@@ -26,18 +24,30 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 
 add_action( 'widgets_init', function() {
-	register_widget( 'WidgetFormsSample' );
+	register_widget( 'SymfonyWidgetExample' );
 } );
 
-class WidgetFormsSample extends WP_Widget {
+
+class SymfonyWidgetExample extends WP_Widget {
 
 	private $controls = array();
 
 	function __construct() {
 
+		parent::__construct( 
+			'widget-controls-example', 
+			__( 'Widget Controls Example' )
+		);
+
+		$category_choices = array();
+
+		foreach ( get_categories() as $category )
+			$category_choices[ $category->term_id ] = html_entity_decode( $category->name );
+
 		/**
 		 * Input field definitions
 		 * @var array
+		 * 
 		 * @see http://symfony.com/doc/current/reference/forms/types.html
 		 * @see http://symfony.com/doc/current/reference/constraints.html
 		 */
@@ -45,7 +55,7 @@ class WidgetFormsSample extends WP_Widget {
 				'title' => array(
 					'type' => 'text',
 					'options' => array(
-						'label' => 'Internal Title',
+						'label' => __( 'Internal Title' ),
 						'required' => true,
 						'attr' => array(
 							'class' => 'widefat'
@@ -58,15 +68,25 @@ class WidgetFormsSample extends WP_Widget {
 				'display_title' => array(
 					'type' => 'text',
 					'options' => array(
-						'label' => 'Display Title',
+						'label' => __( 'Display Title' ),
 						'required' => false,
 						'attr' => array(
 							'class' => 'widefat'
 						)
 					)
+				),
+				'category' => array(
+					'type' => 'choice',
+					'options' => array(
+						'label' => __( 'Category' ),
+						'placeholder' => __( 'Select Category' ),
+						'choices' => $category_choices
+					)
 				)
 			);
 
+		
+		// All of the Twig related stuff here should be moved somewhere else
 		$formEngine = new TwigRendererEngine( array( 
 				'form.html.twig' 
 			) );
@@ -90,11 +110,6 @@ class WidgetFormsSample extends WP_Widget {
 
 		$this->twig = $twig;
 
-		parent::__construct( 
-			'widget-controls-example', 
-			__( 'Widget Controls Example' )
-		);
-
 	}
 
 	function widget( $args, $instance ) {
@@ -108,7 +123,7 @@ class WidgetFormsSample extends WP_Widget {
 	function update( $new_instance, $old_instance ) {
 		
 		$form = $this->get_controls_form()->handleRequest();
-
+		
 		if ( $form->isValid() )
 			return $new_instance;
 
@@ -159,4 +174,3 @@ class WidgetFormsSample extends WP_Widget {
 	}
 	
 }
-
